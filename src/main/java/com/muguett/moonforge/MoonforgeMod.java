@@ -10,6 +10,6 @@ public class MoonforgeMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Moonforge is initializing.");
+        LOGGER.info("Moonforge initialized in learning mode.");
     }
 }

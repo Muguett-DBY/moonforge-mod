@@ -3,7 +3,7 @@
   "id": "${mod_id}",
   "version": "${version}",
   "name": "${mod_name}",
-  "description": "A Minecraft Fabric mod project for Moonforge.",
+  "description": "Singleplayer-only projectile training and accessibility tools for learning Minecraft physics.",
   "authors": [
     "Muguett-DBY"
   ],
@@ -23,8 +23,8 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.16.9",
-    "minecraft": "~1.21.1",
+    "fabricloader": ">=0.16.14",
+    "minecraft": "~1.21.11",
     "java": ">=21",
     "fabric-api": "*"
   }
