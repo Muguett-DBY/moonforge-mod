@@ -6,13 +6,12 @@ import com.muguett.moonforge.physics.ProjectilePhysicsProfile;
 import com.muguett.moonforge.physics.TrajectoryPoint;
 import com.muguett.moonforge.physics.TrajectoryResult;
 import com.muguett.moonforge.physics.TrajectorySimulator;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
@@ -20,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.List;
@@ -29,6 +27,9 @@ public final class TrajectoryRenderer {
     private static final int ARC_R = 64;
     private static final int ARC_G = 219;
     private static final int ARC_B = 145;
+    private static final int IMPACT_R = 255;
+    private static final int IMPACT_G = 94;
+    private static final int IMPACT_B = 91;
 
     private TrajectoryRenderer() {
     }
@@ -41,7 +42,7 @@ public final class TrajectoryRenderer {
         MinecraftClient client = MinecraftClient.getInstance();
         ClientPlayerEntity player = client.player;
 
-        if (player == null || client.world == null || context.matrixStack() == null || context.consumers() == null) {
+        if (player == null || client.world == null || context.matrices() == null || context.consumers() == null) {
             return;
         }
 
@@ -67,25 +68,20 @@ public final class TrajectoryRenderer {
                 preview.profile()
         );
 
-        MatrixStack matrices = context.matrixStack();
-        Vec3d camera = context.camera().getPos();
+        MatrixStack matrices = context.matrices();
+        Vec3d camera = player.getCameraPosVec(1.0F);
         VertexConsumer vertexConsumer = context.consumers().getBuffer(RenderLayers.lines());
 
-        matrices.push();
-        matrices.translate(-camera.x, -camera.y, -camera.z);
-
-        drawArc(matrices, vertexConsumer, result.points());
-        drawImpactMarker(matrices, vertexConsumer, result.impactPosition(), result.impactType());
-
-        matrices.pop();
+        drawArc(matrices, vertexConsumer, result.points(), camera);
+        drawImpactMarker(matrices, vertexConsumer, result.impactPosition(), result.impactType(), camera);
     }
 
-    private static void drawArc(MatrixStack matrices, VertexConsumer vertexConsumer, List<TrajectoryPoint> points) {
+    private static void drawArc(MatrixStack matrices, VertexConsumer vertexConsumer, List<TrajectoryPoint> points, Vec3d camera) {
         MatrixStack.Entry entry = matrices.peek();
 
         for (int index = 0; index < points.size() - 1; index++) {
-            Vec3d current = points.get(index).position();
-            Vec3d next = points.get(index + 1).position();
+            Vec3d current = points.get(index).position().subtract(camera);
+            Vec3d next = points.get(index + 1).position().subtract(camera);
             Vec3d delta = next.subtract(current);
             Vec3d normal = delta.lengthSquared() > 0.0D ? delta.normalize() : new Vec3d(0.0D, 1.0D, 0.0D);
 
@@ -99,26 +95,27 @@ public final class TrajectoryRenderer {
     }
 
     private static void drawImpactMarker(MatrixStack matrices, VertexConsumer vertexConsumer, Vec3d impactPosition,
-                                         HitResult.Type impactType) {
-        float alpha = impactType == HitResult.Type.MISS ? 0.25F : 0.85F;
-        double halfSize = impactType == HitResult.Type.MISS ? 0.08D : 0.18D;
+                                         HitResult.Type impactType, Vec3d camera) {
+        Vec3d center = impactPosition.subtract(camera);
+        double size = impactType == HitResult.Type.MISS ? 0.12D : 0.24D;
+        int alpha = impactType == HitResult.Type.MISS ? 80 : 220;
 
-        WorldRenderer.drawBox(
-                matrices,
-                vertexConsumer,
-                new Box(
-                        impactPosition.x - halfSize,
-                        impactPosition.y - halfSize,
-                        impactPosition.z - halfSize,
-                        impactPosition.x + halfSize,
-                        impactPosition.y + halfSize,
-                        impactPosition.z + halfSize
-                ),
-                1.0F,
-                94.0F / 255.0F,
-                91.0F / 255.0F,
-                alpha
-        );
+        drawLine(matrices, vertexConsumer, center.add(-size, 0.0D, 0.0D), center.add(size, 0.0D, 0.0D), alpha);
+        drawLine(matrices, vertexConsumer, center.add(0.0D, -size, 0.0D), center.add(0.0D, size, 0.0D), alpha);
+        drawLine(matrices, vertexConsumer, center.add(0.0D, 0.0D, -size), center.add(0.0D, 0.0D, size), alpha);
+    }
+
+    private static void drawLine(MatrixStack matrices, VertexConsumer vertexConsumer, Vec3d start, Vec3d end, int alpha) {
+        MatrixStack.Entry entry = matrices.peek();
+        Vec3d delta = end.subtract(start);
+        Vec3d normal = delta.lengthSquared() > 0.0D ? delta.normalize() : new Vec3d(0.0D, 1.0D, 0.0D);
+
+        vertexConsumer.vertex(entry, (float) start.x, (float) start.y, (float) start.z)
+                .color(IMPACT_R, IMPACT_G, IMPACT_B, alpha)
+                .normal(entry, (float) normal.x, (float) normal.y, (float) normal.z);
+        vertexConsumer.vertex(entry, (float) end.x, (float) end.y, (float) end.z)
+                .color(IMPACT_R, IMPACT_G, IMPACT_B, alpha)
+                .normal(entry, (float) normal.x, (float) normal.y, (float) normal.z);
     }
 
     private static AimPreview getActivePreview(ClientPlayerEntity player, MoonforgeConfig config) {
@@ -156,8 +153,7 @@ public final class TrajectoryRenderer {
                 return null;
             }
 
-            double speed = 3.15D;
-            return new AimPreview(ProjectilePhysicsProfile.crossbow(), start, direction.multiply(speed));
+            return new AimPreview(ProjectilePhysicsProfile.crossbow(), start, direction.multiply(3.15D));
         }
 
         if (stack.isOf(Items.TRIDENT) && config.tridentEnabled && player.isUsingItem() && player.getActiveHand() == hand) {
@@ -166,8 +162,7 @@ public final class TrajectoryRenderer {
                 return null;
             }
 
-            double speed = 2.5D;
-            return new AimPreview(ProjectilePhysicsProfile.trident(), start, direction.multiply(speed));
+            return new AimPreview(ProjectilePhysicsProfile.trident(), start, direction.multiply(2.5D));
         }
 
         return null;
