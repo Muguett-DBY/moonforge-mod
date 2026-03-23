@@ -2,6 +2,7 @@ package com.muguett.moonforge.targeting;
 
 import com.muguett.moonforge.MoonforgeMod;
 import com.muguett.moonforge.config.MoonforgeConfig;
+import com.muguett.moonforge.gui.MoonforgeConfigScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -19,6 +20,13 @@ public final class TargetLockManager {
             KeyBinding.Category.MISC
     ));
 
+    private static final KeyBinding OPEN_CONFIG_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key.moonforge.open_config",
+            InputUtil.Type.KEYSYM,
+            GLFW.GLFW_KEY_O,
+            KeyBinding.Category.MISC
+    ));
+
     private static LivingEntity lockedTarget;
 
     private TargetLockManager() {
@@ -33,6 +41,10 @@ public final class TargetLockManager {
     }
 
     private static void tick(MinecraftClient client) {
+        while (OPEN_CONFIG_KEY.wasPressed()) {
+            client.setScreen(new MoonforgeConfigScreen(client.currentScreen));
+        }
+
         while (LOCK_TARGET_KEY.wasPressed()) {
             toggleTarget(client);
         }

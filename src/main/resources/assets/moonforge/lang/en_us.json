@@ -1,3 +1,16 @@
 {
-  "itemGroup.moonforge.main": "Moonforge"
+  "itemGroup.moonforge.arsenal": "Moonforge Arsenal",
+  "itemGroup.moonforge.main": "Moonforge",
+  "item.moonforge.voidburst_arbalest": "Voidburst Arbalest",
+  "item.moonforge.verdant_guidebow": "Verdant Guidebow",
+  "item.moonforge.solaris_staff": "Solaris Staff",
+  "item.moonforge.frostbite_scepter": "Frostbite Scepter",
+  "item.moonforge.thunderchain_baton": "Thunderchain Baton",
+  "item.moonforge.graviton_maul": "Graviton Maul",
+  "item.moonforge.bloomlash_whip": "Bloomlash Whip",
+  "item.moonforge.riftstep_dagger": "Riftstep Dagger",
+  "item.moonforge.echo_disc_launcher": "Echo Disc Launcher",
+  "item.moonforge.starfall_tome": "Starfall Tome",
+  "key.moonforge.lock_target": "Lock Practice Target",
+  "key.moonforge.open_config": "Open Moonforge Tuning"
 }

@@ -11,4 +11,9 @@ public class MoonforgeConfig {
     public boolean crossbowEnabled = true;
     public boolean tridentEnabled = true;
     public boolean hostileTargetsOnly = true;
+    public double voidburstSpeed = 6.2D;
+    public double voidburstGravity = 0.006D;
+    public double guidebowSpeed = 1.9D;
+    public double guidebowGravity = 0.018D;
+    public double guidebowSteerStrength = 0.24D;
 }

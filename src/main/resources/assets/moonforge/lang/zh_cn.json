@@ -1,3 +1,16 @@
 {
-  "itemGroup.moonforge.main": "Moonforge"
+  "itemGroup.moonforge.arsenal": "Moonforge Arsenal",
+  "itemGroup.moonforge.main": "Moonforge",
+  "item.moonforge.voidburst_arbalest": "爆裂弩",
+  "item.moonforge.verdant_guidebow": "翠导弓",
+  "item.moonforge.solaris_staff": "日耀法杖",
+  "item.moonforge.frostbite_scepter": "霜咬权杖",
+  "item.moonforge.thunderchain_baton": "雷链短棍",
+  "item.moonforge.graviton_maul": "引力重槌",
+  "item.moonforge.bloomlash_whip": "繁藤鞭",
+  "item.moonforge.riftstep_dagger": "裂步匕首",
+  "item.moonforge.echo_disc_launcher": "回响圆盘发射器",
+  "item.moonforge.starfall_tome": "陨星秘典",
+  "key.moonforge.lock_target": "锁定练习目标",
+  "key.moonforge.open_config": "打开 Moonforge 调整界面"
 }

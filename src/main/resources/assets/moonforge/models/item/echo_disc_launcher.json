@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "moonforge:item/echo_disc_launcher"
+  }
+}
