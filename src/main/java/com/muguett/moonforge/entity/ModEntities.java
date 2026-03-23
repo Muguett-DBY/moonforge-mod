@@ -28,6 +28,12 @@ public final class ModEntities {
                     .maxTrackingRange(4)
                     .trackingTickInterval(10));
 
+    public static final EntityType<AkBulletEntity> AK47_BULLET = register("ak47_bullet",
+            EntityType.Builder.<AkBulletEntity>create(AkBulletEntity::new, SpawnGroup.MISC)
+                    .dimensions(0.2F, 0.2F)
+                    .maxTrackingRange(6)
+                    .trackingTickInterval(1));
+
     private ModEntities() {
     }
 

@@ -6,8 +6,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -16,9 +14,10 @@ public final class ModItemGroups {
             Registries.ITEM_GROUP,
             Identifier.of(MoonforgeMod.MOD_ID, "arsenal"),
             FabricItemGroup.builder()
-                    .icon(() -> new ItemStack(ModItems.VOIDBURST_ARBALEST))
+                    .icon(() -> new ItemStack(ModItems.AK47))
                     .displayName(Text.translatable("itemGroup.moonforge.arsenal"))
                     .entries((displayContext, entries) -> {
+                        entries.add(ModItems.AK47);
                         entries.add(ModItems.VOIDBURST_ARBALEST);
                         entries.add(ModItems.VERDANT_GUIDEBOW);
                         entries.add(ModItems.SOLARIS_STAFF);

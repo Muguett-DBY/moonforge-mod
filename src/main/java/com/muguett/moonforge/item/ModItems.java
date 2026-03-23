@@ -13,6 +13,8 @@ import java.util.function.Function;
 public final class ModItems {
     public static final Item VOIDBURST_ARBALEST = register("voidburst_arbalest", settings -> new VoidburstArbalestItem(settings.maxCount(1)));
     public static final Item VERDANT_GUIDEBOW = register("verdant_guidebow", settings -> new VerdantGuidebowItem(settings.maxCount(1)));
+    public static final Item AK47 = register("ak47", Ak47Item::new);
+    public static final Item AK47_ROUND = register("ak47_round", Item::new);
     public static final Item SOLARIS_STAFF = register("solaris_staff", settings -> new AbilityWeaponItem(settings, ArsenalWeaponType.SOLARIS_STAFF, 18));
     public static final Item FROSTBITE_SCEPTER = register("frostbite_scepter", settings -> new AbilityWeaponItem(settings, ArsenalWeaponType.FROSTBITE_SCEPTER, 14));
     public static final Item THUNDERCHAIN_BATON = register("thunderchain_baton", settings -> new AbilityWeaponItem(settings, ArsenalWeaponType.THUNDERCHAIN_BATON, 22));

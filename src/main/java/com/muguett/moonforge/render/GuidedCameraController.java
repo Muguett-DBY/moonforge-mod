@@ -1,9 +1,10 @@
 package com.muguett.moonforge.render;
 
 import com.muguett.moonforge.entity.GuidedArrowEntity;
+import com.muguett.moonforge.network.GuidedArrowControlPayload;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.Vec3d;
 
 public final class GuidedCameraController {
     private static int pendingAcquireTicks;
@@ -30,12 +31,8 @@ public final class GuidedCameraController {
             if (!activeProjectile.isAlive() || activeProjectile.age > 200) {
                 resetCamera(client);
             } else {
-                Vec3d velocity = activeProjectile.getVelocity();
-                if (velocity.lengthSquared() > 1.0E-6D) {
-                    client.player.setYaw(activeProjectile.getYaw());
-                    client.player.setPitch(activeProjectile.getPitch());
-                }
                 client.setCameraEntity(activeProjectile);
+                sendControlInput(activeProjectile, client);
             }
             return;
         }
@@ -55,11 +52,29 @@ public final class GuidedCameraController {
 
         if (best != null) {
             activeProjectile = best;
-            client.player.setYaw(best.getYaw());
-            client.player.setPitch(best.getPitch());
             client.setCameraEntity(best);
             pendingAcquireTicks = 0;
         }
+    }
+
+    private static void sendControlInput(GuidedArrowEntity projectile, MinecraftClient client) {
+        float turnInput = 0.0F;
+        float liftInput = 0.0F;
+
+        if (client.options.leftKey.isPressed()) {
+            turnInput -= 1.0F;
+        }
+        if (client.options.rightKey.isPressed()) {
+            turnInput += 1.0F;
+        }
+        if (client.options.forwardKey.isPressed()) {
+            liftInput += 1.0F;
+        }
+        if (client.options.backKey.isPressed()) {
+            liftInput -= 1.0F;
+        }
+
+        ClientPlayNetworking.send(new GuidedArrowControlPayload(projectile.getId(), turnInput, liftInput));
     }
 
     private static void resetCamera(MinecraftClient client) {

@@ -15,10 +15,12 @@ import net.minecraft.world.World;
 
 public class GuidedArrowEntity extends ThrownItemEntity {
     private static final int MAX_LIFETIME_TICKS = 200;
+    private static final int INPUT_TIMEOUT_TICKS = 3;
     private double customGravity = 0.018D;
     private double steerStrength = 0.24D;
-    private float previousVisualYaw;
-    private float previousVisualPitch;
+    private float turnInput;
+    private float liftInput;
+    private int inputTicksRemaining;
 
     public GuidedArrowEntity(EntityType<? extends GuidedArrowEntity> entityType, World world) {
         super(entityType, world);
@@ -41,6 +43,12 @@ public class GuidedArrowEntity extends ThrownItemEntity {
         this.steerStrength = steerStrength;
     }
 
+    public void setControlInput(float turnInput, float liftInput) {
+        this.turnInput = MathHelper.clamp(turnInput, -1.0F, 1.0F);
+        this.liftInput = MathHelper.clamp(liftInput, -1.0F, 1.0F);
+        this.inputTicksRemaining = INPUT_TIMEOUT_TICKS;
+    }
+
     @Override
     protected double getGravity() {
         return customGravity;
@@ -48,8 +56,6 @@ public class GuidedArrowEntity extends ThrownItemEntity {
 
     @Override
     public void tick() {
-        previousVisualYaw = this.getYaw();
-        previousVisualPitch = this.getPitch();
         super.tick();
 
         if (this.age > MAX_LIFETIME_TICKS) {
@@ -57,30 +63,72 @@ public class GuidedArrowEntity extends ThrownItemEntity {
             return;
         }
 
-        if (this.getOwner() instanceof LivingEntity owner) {
-            Vec3d velocity = this.getVelocity();
-            Vec3d desiredDirection = owner.getRotationVec(1.0F).normalize();
-            double speed = Math.max(0.8D, velocity.length());
-            Vec3d steeredVelocity = velocity.multiply(1.0D - steerStrength).add(desiredDirection.multiply(speed * steerStrength));
-            Vec3d normalized = steeredVelocity.normalize().multiply(speed);
-            this.setVelocity(normalized);
-        }
-
-        updateVisualRotationFromVelocity();
+        steerFromControlInput();
+        updateRotationFromVelocity();
     }
 
-    private void updateVisualRotationFromVelocity() {
+    private void steerFromControlInput() {
         Vec3d velocity = this.getVelocity();
         if (velocity.lengthSquared() < 1.0E-6D) {
             return;
         }
 
-        float targetYaw = (float) Math.toDegrees(Math.atan2(velocity.x, velocity.z));
-        float targetPitch = (float) Math.toDegrees(Math.atan2(velocity.y, Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z)));
-        float smoothedYaw = previousVisualYaw + MathHelper.wrapDegrees(targetYaw - previousVisualYaw) * 0.5F;
-        float smoothedPitch = previousVisualPitch + (targetPitch - previousVisualPitch) * 0.5F;
-        this.setYaw(smoothedYaw);
-        this.setPitch(smoothedPitch);
+        if (inputTicksRemaining > 0) {
+            inputTicksRemaining--;
+        } else {
+            turnInput = 0.0F;
+            liftInput = 0.0F;
+        }
+
+        double speed = Math.max(0.8D, velocity.length());
+        Vec3d forward = velocity.normalize();
+        Vec3d worldUp = new Vec3d(0.0D, 1.0D, 0.0D);
+        Vec3d right = worldUp.crossProduct(forward);
+        if (right.lengthSquared() < 1.0E-6D) {
+            right = new Vec3d(1.0D, 0.0D, 0.0D);
+        } else {
+            right = right.normalize();
+        }
+
+        double yawRate = Math.max(0.008D, steerStrength * 0.12D);
+        double pitchRate = Math.max(0.008D, steerStrength * 0.10D);
+
+        Vec3d steered = rotateAroundAxis(forward, worldUp, -turnInput * yawRate);
+        steered = rotateAroundAxis(steered, right, -liftInput * pitchRate);
+
+        if (steered.lengthSquared() < 1.0E-6D) {
+            return;
+        }
+
+        this.setVelocity(steered.normalize().multiply(speed));
+    }
+
+    private void updateRotationFromVelocity() {
+        Vec3d velocity = this.getVelocity();
+        if (velocity.lengthSquared() < 1.0E-6D) {
+            return;
+        }
+
+        double horizontal = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
+        float yaw = (float) Math.toDegrees(Math.atan2(velocity.x, velocity.z));
+        float pitch = (float) -Math.toDegrees(Math.atan2(velocity.y, horizontal));
+        this.setYaw(yaw);
+        this.setPitch(pitch);
+        this.setBodyYaw(yaw);
+        this.setHeadYaw(yaw);
+    }
+
+    private static Vec3d rotateAroundAxis(Vec3d vector, Vec3d axis, double angle) {
+        if (Math.abs(angle) < 1.0E-6D || axis.lengthSquared() < 1.0E-6D) {
+            return vector;
+        }
+
+        Vec3d normalizedAxis = axis.normalize();
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        return vector.multiply(cos)
+                .add(normalizedAxis.crossProduct(vector).multiply(sin))
+                .add(normalizedAxis.multiply(normalizedAxis.dotProduct(vector) * (1.0D - cos)));
     }
 
     @Override
