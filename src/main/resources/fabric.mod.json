@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "A Minecraft Fabric mod project for Moonforge.",
+  "authors": [
+    "Muguett-DBY"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Muguett-DBY/moonforge-mod",
+    "sources": "https://github.com/Muguett-DBY/moonforge-mod"
+  },
+  "license": "MIT",
+  "icon": "assets/moonforge/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.muguett.moonforge.MoonforgeMod"
+    ],
+    "client": [
+      "com.muguett.moonforge.MoonforgeModClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

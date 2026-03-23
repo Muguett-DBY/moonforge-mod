@@ -1,0 +1,15 @@
+package com.muguett.moonforge;
+
+import net.fabricmc.api.ModInitializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class MoonforgeMod implements ModInitializer {
+    public static final String MOD_ID = "moonforge";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+    @Override
+    public void onInitialize() {
+        LOGGER.info("Moonforge is initializing.");
+    }
+}
