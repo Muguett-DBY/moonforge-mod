@@ -18,6 +18,10 @@ public final class ModItemGroups {
                     .displayName(Text.translatable("itemGroup.moonforge.arsenal"))
                     .entries((displayContext, entries) -> {
                         entries.add(ModItems.AK47);
+                        entries.add(ModItems.M4_CARBINE);
+                        entries.add(ModItems.VIPER_SMG);
+                        entries.add(ModItems.THUNDERCLAP_SHOTGUN);
+                        entries.add(ModItems.PEREGRINE_DMR);
                         entries.add(ModItems.VOIDBURST_ARBALEST);
                         entries.add(ModItems.VERDANT_GUIDEBOW);
                         entries.add(ModItems.SOLARIS_STAFF);

@@ -6,11 +6,14 @@ import com.muguett.moonforge.entity.ArsenalSpellEntity;
 import com.muguett.moonforge.entity.GuidedArrowEntity;
 import com.muguett.moonforge.entity.ModEntities;
 import com.muguett.moonforge.entity.VoidburstBoltEntity;
+import com.muguett.moonforge.render.AkScopeController;
 import com.muguett.moonforge.render.GuidedCameraController;
+import com.muguett.moonforge.render.HitFeedbackController;
 import com.muguett.moonforge.render.TrajectoryRenderer;
 import com.muguett.moonforge.render.WorldSafetyOverlay;
 import com.muguett.moonforge.targeting.TargetLockManager;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 
@@ -20,6 +23,9 @@ public class MoonforgeModClient implements ClientModInitializer {
         MoonforgeConfigManager.load();
         TargetLockManager.initialize();
         GuidedCameraController.initialize();
+        AkScopeController.initialize();
+        HitFeedbackController.initialize();
+        ClientTickEvents.END_CLIENT_TICK.register(client -> HitFeedbackController.tick());
         EntityRendererRegistry.register(ModEntities.VOIDBURST_BOLT, FlyingItemEntityRenderer<VoidburstBoltEntity>::new);
         EntityRendererRegistry.register(ModEntities.GUIDED_ARROW, FlyingItemEntityRenderer<GuidedArrowEntity>::new);
         EntityRendererRegistry.register(ModEntities.ARSENAL_SPELL, FlyingItemEntityRenderer<ArsenalSpellEntity>::new);
