@@ -1,8 +1,17 @@
-# Moonforge
+<!-- Project artwork created for this repository. -->
+<p align="center">
+  <img src="./docs/assets/readme-banner.svg" width="100%" alt="Moonforge — Projectiles, trajectories and small experiments." />
+</p>
+
+<h1 align="center">Moonforge</h1>
+
+<p align="center">
+  <img src="./docs/assets/readme-badges.svg" alt="Prototype · Minecraft 1.21.11 · Fabric · Java 21" />
+</p>
 
 **A Minecraft sandbox for projectile physics, trajectory overlays, and experimental weapons.**
 
-`Minecraft 1.21.11` · `Fabric` · `Java 21` · `Prototype`
+<p align="center"><a href="#in-this-repository">In this repository</a> &nbsp; · &nbsp; <a href="#build-and-run">Build and run</a> &nbsp; · &nbsp; <a href="#code-map">Code map</a></p>
 
 ## In this repository
 
